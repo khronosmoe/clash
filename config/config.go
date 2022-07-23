@@ -53,6 +53,9 @@ type Controller struct {
 	ExternalController string `json:"-"`
 	ExternalUI         string `json:"-"`
 	Secret             string `json:"-"`
+	ExternalTLS        bool   `json:"-"`
+	TLSCertPath        string `json:"-"`
+	TLSKeyPath         string `json:"-"`
 }
 
 // DNS config
@@ -137,6 +140,9 @@ type RawConfig struct {
 	ExternalController string       `yaml:"external-controller"`
 	ExternalUI         string       `yaml:"external-ui"`
 	Secret             string       `yaml:"secret"`
+	ExternalTLS        bool         `yaml:"external-tls"`
+	TLSCertPath        string       `yaml:"tls-cert-file"`
+	TLSKeyPath         string       `yaml:"tls-key-file"`
 	Interface          string       `yaml:"interface-name"`
 	RoutingMark        int          `yaml:"routing-mark"`
 
@@ -252,6 +258,7 @@ func parseGeneral(cfg *RawConfig) (*General, error) {
 		}
 	}
 
+
 	return &General{
 		Inbound: Inbound{
 			Port:        cfg.Port,
@@ -266,6 +273,9 @@ func parseGeneral(cfg *RawConfig) (*General, error) {
 			ExternalController: cfg.ExternalController,
 			ExternalUI:         cfg.ExternalUI,
 			Secret:             cfg.Secret,
+			ExternalTLS:        cfg.ExternalTLS,
+			TLSCertPath:        cfg.TLSCertPath,
+			TLSKeyPath:         cfg.TLSKeyPath,
 		},
 		Mode:        cfg.Mode,
 		LogLevel:    cfg.LogLevel,

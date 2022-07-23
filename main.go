@@ -27,6 +27,9 @@ var (
 	externalUI         string
 	externalController string
 	secret             string
+	externalTLS        bool
+	tLSCertPath        string
+	tLSKeyPath         string
 )
 
 func init() {
@@ -35,6 +38,9 @@ func init() {
 	flag.StringVar(&externalUI, "ext-ui", "", "override external ui directory")
 	flag.StringVar(&externalController, "ext-ctl", "", "override external controller address")
 	flag.StringVar(&secret, "secret", "", "override secret for RESTful API")
+	flag.StringVar(&tLSCertPath, "tls-crt", "", "override HTTP server cert path")
+	flag.StringVar(&tLSKeyPath, "tls-key", "", "override HTTP server key path")	
+	flag.BoolVar(&externalTLS, "ext-tls", false, "override TLS parameters")
 	flag.BoolVar(&version, "v", false, "show current version of clash")
 	flag.BoolVar(&testConfig, "t", false, "test configuration and exit")
 	flag.Parse()
@@ -94,6 +100,15 @@ func main() {
 	}
 	if flagset["secret"] {
 		options = append(options, hub.WithSecret(secret))
+	}
+	if flagset["ext-tls"] {
+		options = append(options, hub.WithExternalTLS(externalTLS))
+	}
+	if flagset["tls-crt"] {
+		options = append(options, hub.WithTLSCertPath(tLSCertPath))
+	}
+	if flagset["tls-key"] {
+		options = append(options, hub.WithTLSKeyPath(tLSKeyPath))
 	}
 
 	if err := hub.Parse(options...); err != nil {

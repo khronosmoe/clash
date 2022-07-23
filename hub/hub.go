@@ -26,6 +26,24 @@ func WithSecret(secret string) Option {
 	}
 }
 
+func WithExternalTLS(externalTLS bool) Option {
+	return func(cfg *config.Config) {
+		cfg.General.ExternalTLS = externalTLS
+	}
+}
+
+func WithTLSCertPath(tLSCertPath string) Option {
+	return func(cfg *config.Config) {
+		cfg.General.TLSCertPath = tLSCertPath
+	}
+}
+
+func WithTLSKeyPath(tLSKeyPath string) Option {
+	return func(cfg *config.Config) {
+		cfg.General.TLSKeyPath = tLSKeyPath
+	}
+}
+
 // Parse call at the beginning of clash
 func Parse(options ...Option) error {
 	cfg, err := executor.Parse()
@@ -35,6 +53,10 @@ func Parse(options ...Option) error {
 
 	for _, option := range options {
 		option(cfg)
+	}
+
+	if (cfg.General.ExternalTLS) {
+		route.SetTLS(cfg.General.TLSCertPath,cfg.General.TLSKeyPath)
 	}
 
 	if cfg.General.ExternalUI != "" {

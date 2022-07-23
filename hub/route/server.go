@@ -24,6 +24,9 @@ var (
 	serverAddr   = ""
 
 	uiPath = ""
+	
+	certPath = ""
+	keyPath  = ""
 
 	upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -35,6 +38,11 @@ var (
 type Traffic struct {
 	Up   int64 `json:"up"`
 	Down int64 `json:"down"`
+}
+
+func SetTLS(certpath string, keypath string) {
+	certPath = C.Path.Resolve(certpath)
+	keyPath = C.Path.Resolve(keypath)
 }
 
 func SetUIPath(path string) {
@@ -90,7 +98,14 @@ func Start(addr string, secret string) {
 	}
 	serverAddr = l.Addr().String()
 	log.Infoln("RESTful API listening at: %s", serverAddr)
-	if err = http.Serve(l, r); err != nil {
+
+	if len(certPath) > 0 && len(keyPath) > 0 {
+		err = http.ServeTLS(l, r, certPath, keyPath)
+	} else {
+		err = http.Serve(l, r)
+	}
+
+	if err != nil {
 		log.Errorln("External controller serve error: %s", err)
 	}
 }
